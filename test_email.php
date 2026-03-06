@@ -151,15 +151,15 @@ $body1 = "<head>
 
 
 </body>";
-$emailbody = $body1;
+// $emailbody = $body1;
 
-# Instantiate the client.
-$mgClient = new Mailgun('869b0232c00e6acbac22ab0390159d57-0f472795-88d0b078');
-$domain = "https://api.mailgun.net/v3/mail.usalama.app";
-$result = $mgClient->sendMessage($domain, array(
-	'from'	=> $compname .'<'.$compemail.'>',
-	'to'	=> $to_name .'<'.$to.'>',
-	'subject' => $subject,
-	'html'	=> $emailbody
-));
+// # Instantiate the client.
+// $mgClient = new Mailgun('-0f472795-88d0b078');
+// $domain = "https://api.mailgun.net/v3/mail.usalama.app";
+// $result = $mgClient->sendMessage($domain, array(
+// 	'from'	=> $compname .'<'.$compemail.'>',
+// 	'to'	=> $to_name .'<'.$to.'>',
+// 	'subject' => $subject,
+// 	'html'	=> $emailbody
+// ));
 
