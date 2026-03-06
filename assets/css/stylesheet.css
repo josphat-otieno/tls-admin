@@ -1,0 +1,206 @@
+.alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+/* Global Primary Color Overrides */
+:root {
+    --tls-red: #E62B1E;
+    --tls-red-dark: #8b1a12;
+}
+
+.btn-primary {
+    background-color: var(--tls-red) !important;
+    border-color: var(--tls-red) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: var(--tls-red-dark) !important;
+    border-color: var(--tls-red-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--tls-red) !important;
+    border-color: var(--tls-red) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--tls-red) !important;
+    border-color: var(--tls-red) !important;
+    color: #fff !important;
+}
+
+.text-primary {
+    color: var(--tls-red) !important;
+}
+
+.bg-primary {
+    background-color: var(--tls-red) !important;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+    background-color: var(--tls-red) !important;
+}
+
+a {
+    color: var(--tls-red);
+}
+
+a:hover {
+    color: var(--tls-red-dark);
+}
+
+.page-item.active .page-link {
+    background-color: var(--tls-red) !important;
+    border-color: var(--tls-red) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--tls-red) !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--tls-red) !important;
+    border-color: var(--tls-red) !important;
+}
+
+.bg-soft-primary {
+    background-color: rgba(230, 43, 30, 0.1) !important;
+    color: var(--tls-red) !important;
+}
+
+.badge-soft-primary {
+    background-color: rgba(230, 43, 30, 0.1) !important;
+    color: var(--tls-red) !important;
+}
+
+.progress-bar {
+    background-color: var(--tls-red) !important;
+}
+
+/* Specific index widgets */
+.widget-flat.text-bg-primary {
+    background-color: var(--tls-red) !important;
+}
+
+.card-radio:checked+.card-radio-label {
+    border-color: var(--tls-red) !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(230, 43, 30, 0.05) !important;
+    color: var(--tls-red) !important;
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23E62B1E'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.btn-link {
+    color: var(--tls-red) !important;
+}
+
+/* Dashboard Stats Icons */
+.stat-icon.bg-purple.bg-soft {
+    background-color: rgba(230, 43, 30, 0.1) !important;
+}
+
+.stat-icon.text-purple {
+    color: var(--tls-red) !important;
+}
+
+.stat-icon.bg-info.bg-soft {
+    background-color: rgba(230, 43, 30, 0.1) !important;
+}
+
+.stat-icon.text-info {
+    color: var(--tls-red) !important;
+}
+
+.stat-icon.bg-success.bg-soft {
+    background-color: rgba(230, 43, 30, 0.1) !important;
+}
+
+.stat-icon.text-success {
+    color: var(--tls-red) !important;
+}
+
+.stat-card.projects {
+    border-left-color: var(--tls-red) !important;
+}
+
+.stat-card.members {
+    border-left-color: var(--tls-red) !important;
+}
+
+.stat-card.services {
+    border-left-color: var(--tls-red) !important;
+}
+
+.stat-card.blogs {
+    border-left-color: var(--tls-red) !important;
+}
+
+/* Sidebar Menu Hover & Active Styles */
+#sidebar-menu .metismenu li a:hover,
+#sidebar-menu .metismenu li a:focus,
+#sidebar-menu .metismenu li a:active,
+#sidebar-menu .metismenu li a.active,
+#sidebar-menu .metismenu li.mm-active>a,
+#side-menu li a:hover,
+#side-menu li a:focus,
+#side-menu li a:active,
+#side-menu li a.active,
+#side-menu li.mm-active>a {
+    color: var(--tls-red) !important;
+}
+
+#sidebar-menu .metismenu li a:hover i,
+#sidebar-menu .metismenu li a:hover span,
+#sidebar-menu .metismenu li a.active i,
+#sidebar-menu .metismenu li a.active span,
+#sidebar-menu .metismenu li.mm-active>a i,
+#sidebar-menu .metismenu li.mm-active>a span,
+#side-menu li a:hover i,
+#side-menu li a:hover span,
+#side-menu li a.active i,
+#side-menu li a.active span,
+#side-menu li.mm-active>a i,
+#side-menu li.mm-active>a span {
+    color: var(--tls-red) !important;
+}
+
+/* Specific logout hover */
+#side-menu li a.notify-item:hover,
+#side-menu li a.notify-item:hover i,
+#side-menu li a.notify-item:hover span {
+    color: var(--tls-red) !important;
+}
+
+/* Parent LI hover coverage */
+#side-menu li:hover>a,
+#side-menu li:hover>a i,
+#side-menu li:hover>a span,
+#sidebar-menu .metismenu li:hover>a,
+#sidebar-menu .metismenu li:hover>a i,
+#sidebar-menu .metismenu li:hover>a span {
+    color: var(--tls-red) !important;
+}
