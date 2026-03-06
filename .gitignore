@@ -53,3 +53,5 @@ package-lock.json
 *.sql
 *.md
 /.agent
+test_email.php
+vendor/
