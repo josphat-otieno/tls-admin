@@ -295,7 +295,7 @@ $result = mysqli_query($con, $sql);
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="modal-title">Add Homepage Slide</h4>
+                    <h4 class="modal-title" id="modal-title">Add Homepage Background</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -303,7 +303,7 @@ $result = mysqli_query($con, $sql);
                         <input type="hidden" name="id" id="slide-id">
                         
                         <div class="mb-3">
-                            <label class="form-label">Slide Type <span class="text-danger">*</span></label>
+                            <label class="form-label">Background Type <span class="text-danger">*</span></label>
                             <select class="form-select" id="slide_type" name="slide_type" required onchange="toggleSlideType()">
                                 <option value="">Select Type</option>
                                 <option value="image">Image Slide</option>

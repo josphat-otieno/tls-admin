@@ -115,6 +115,12 @@
                         <span>Contact</span>
                     </a>
                 </li>
+                <li>
+                    <a href="enquiries.php">
+                        <i class="mdi mdi-email-receive"></i>
+                        <span>Enquiries</span>
+                    </a>
+                </li>
                 <!-- <li>
                     <a href="publications.php">
                         <i class="mdi mdi-file-document-multiple"></i>

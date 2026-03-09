@@ -241,7 +241,7 @@
         </div>
 
         <div class="footer-text">
-            © <script>document.write(new Date().getFullYear())</script> TLS Advertising Agency. CMS v2.0
+            © <script>document.write(new Date().getFullYear())</script> TLS Advertising Agency. CMS
         </div>
     </div>
 

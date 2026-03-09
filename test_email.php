@@ -154,7 +154,7 @@ $body1 = "<head>
 // $emailbody = $body1;
 
 // # Instantiate the client.
-// $mgClient = new Mailgun('-0f472795-88d0b078');
+// $mgClient = ""
 // $domain = "https://api.mailgun.net/v3/mail.usalama.app";
 // $result = $mgClient->sendMessage($domain, array(
 // 	'from'	=> $compname .'<'.$compemail.'>',
