@@ -84,6 +84,13 @@
                 </li>
                 
                 <li>
+                    <a href="applications.php">
+                        <i class="mdi mdi-file-document-outline"></i>
+                        <span>Applications</span>
+                    </a>
+                </li>
+                
+                <li>
                     <a href="projects.php">
                         <i class="mdi mdi-briefcase"></i>
                         <span>Projects</span>

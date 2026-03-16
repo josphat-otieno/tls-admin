@@ -3,6 +3,19 @@ ob_start();
 error_reporting(E_ALL);
 include 'dbConnect.php';
 
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function generate_job_id($con) {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    do {
+        $id = '';
+        for ($i = 0; $i < 8; $i++) {
+            $id .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        $check = mysqli_query($con, "SELECT id FROM careers WHERE job_id = '$id' LIMIT 1");
+    } while ($check && mysqli_num_rows($check) > 0);
+    return $id;
+}
+
 // ── ADD ──────────────────────────────────────────────────────────────────────
 if (isset($_POST['add_career'])) {
     $title        = mysqli_real_escape_string($con, trim($_POST['title']));
@@ -13,9 +26,10 @@ if (isset($_POST['add_career'])) {
     $requirements = mysqli_real_escape_string($con, trim($_POST['requirements'] ?? ''));
     $deadline     = !empty($_POST['deadline']) ? "'" . mysqli_real_escape_string($con, $_POST['deadline']) . "'" : "NULL";
     $is_active    = isset($_POST['is_active']) ? 1 : 0;
+    $job_id       = generate_job_id($con);
 
-    $sql = "INSERT INTO careers (title, location, job_type, department, description, requirements, deadline, is_active)
-            VALUES ('$title','$location','$job_type','$department','$description','$requirements',$deadline,$is_active)";
+    $sql = "INSERT INTO careers (job_id, title, location, job_type, department, description, requirements, deadline, is_active)
+            VALUES ('$job_id','$title','$location','$job_type','$department','$description','$requirements',$deadline,$is_active)";
 
     if ($con->query($sql)) {
         header("Location: careers.php?status=succ");

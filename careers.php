@@ -265,6 +265,7 @@ $careers_result = mysqli_query($con, "SELECT * FROM careers ORDER BY is_active D
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                                                 <h5 class="mb-0"><?php echo htmlspecialchars($career['title']); ?></h5>
+                                                <span class="badge bg-soft-dark text-dark job-type-badge" style="font-family:monospace;letter-spacing:1px;" title="Job ID"><?php echo htmlspecialchars($career['job_id']); ?></span>
                                                 <span class="badge <?php echo $type_color; ?> job-type-badge"><?php echo htmlspecialchars($career['job_type']); ?></span>
                                                 <?php if ($is_active): ?>
                                                     <span class="badge bg-soft-success text-success career-status-badge"><i class="mdi mdi-check-circle me-1"></i>Active</span>
