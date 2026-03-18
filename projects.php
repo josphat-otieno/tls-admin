@@ -42,6 +42,14 @@ if (!empty($_GET['status'])) {
 // Fetch all projects
 $sql = "SELECT * FROM projects ORDER BY created_at DESC";
 $projects_result = mysqli_query($con, $sql);
+
+// Fetch deliverable types
+$types_sql = "SELECT * FROM deliverable_types ORDER BY name ASC";
+$types_result = mysqli_query($con, $types_sql);
+$deliverable_types = [];
+while ($type = mysqli_fetch_assoc($types_result)) {
+    $deliverable_types[] = $type;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -138,6 +146,41 @@ $projects_result = mysqli_query($con, $sql);
             display: none;
             margin-top: 10px;
         }
+        /* Deliverables Styles */
+        .deliverable-row {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+        .remove-deliverable {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ff5b5b;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .existing-deliverable {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .existing-deliverable-info {
+            flex-grow: 1;
+        }
+        .deliverable-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 
@@ -221,9 +264,54 @@ $projects_result = mysqli_query($con, $sql);
                             </div>
                         </div>
 
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Project Deliverables</h5>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addDeliverableRow()">
+                                <i class="mdi mdi-plus-circle me-1"></i> Add Deliverable
+                            </button>
+                        </div>
+
+                        <div id="existing-deliverables-container" class="mb-3" style="display: none;">
+                            <label class="form-label">Existing Deliverables</label>
+                            <div id="existing-deliverables-list"></div>
+                        </div>
+                        <input type="hidden" name="deleted_deliverables" id="deleted-deliverables-input">
+
+                        <div id="deliverables-container">
+                            <!-- Dynamic rows will be added here -->
+                        </div>
+
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" name="add_project" id="project-submit-btn" class="btn btn-primary">Add Project</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Deliverable Type Modal -->
+    <div id="type-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="type-modal-title">Add Deliverable Type</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="type-form" action="edit_deliverable_type.php" method="POST">
+                        <input type="hidden" name="id" id="type-id">
+                        
+                        <div class="mb-3">
+                            <label for="type_name" class="form-label">Type Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="type_name" name="name" required placeholder="e.g., Image, Video, PDF">
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" name="add_type" id="type-submit-btn" class="btn btn-primary">Add Type</button>
                         </div>
                     </form>
                 </div>
@@ -256,81 +344,160 @@ $projects_result = mysqli_query($con, $sql);
                     <!-- end page title -->
 
                     <div class="row">
-                        <!-- Projects Tab -->
-                        <div class="col-12" id="projects-tab">
-                            <div class="row mb-3">
-                                <div class="col-sm-12">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="page-title">Projects</h4>
-                                        <button class="btn btn-primary" onclick="openAddProjectModal()">
-                                            <i class="mdi mdi-plus-circle me-1"></i> Add Project
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs nav-bordered mb-3">
+                                        <li class="nav-item">
+                                            <a href="#projects-tab" data-bs-toggle="tab" aria-expanded="<?php echo ($active_tab == 'projects') ? 'true' : 'false'; ?>" class="nav-link <?php echo ($active_tab == 'projects') ? 'active' : ''; ?>">
+                                                <i class="mdi mdi-briefcase d-md-none d-block me-1"></i>
+                                                <span class="d-none d-md-block">Projects</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="#types-tab" data-bs-toggle="tab" aria-expanded="<?php echo ($active_tab == 'types') ? 'true' : 'false'; ?>" class="nav-link <?php echo ($active_tab == 'types') ? 'active' : ''; ?>">
+                                                <i class="mdi mdi-format-list-bulleted-type d-md-none d-block me-1"></i>
+                                                <span class="d-none d-md-block">Deliverable Types</span>
+                                            </a>
+                                        </li>
+                                    </ul>
 
-
-
-                            <div class="row" id="projects-container">
-                                <?php if(mysqli_num_rows($projects_result) > 0): ?>
-                                    <?php while($project = mysqli_fetch_assoc($projects_result)): ?>
-                                        <div class="col-lg-4 project-item">
-                                            <div class="card project-card">
-                                                <?php if(!empty($project['thumbnail'])): ?>
-                                                    <img src="<?php echo htmlspecialchars($project['thumbnail']); ?>" class="project-thumbnail" alt="<?php echo htmlspecialchars($project['title']); ?>">
-                                                <?php else: ?>
-                                                    <div class="project-no-thumbnail">
-                                                        <i class="mdi mdi-briefcase-outline"></i>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div class="card-body">
-                                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                                        <h5 class="mt-0 mb-1"><?php echo htmlspecialchars($project['title']); ?></h5>
-                                                        <div class="dropdown">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="mdi mdi-dots-vertical"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a href="javascript:void(0);" class="dropdown-item" onclick='editProject(<?php echo htmlspecialchars(json_encode($project), ENT_QUOTES, "UTF-8"); ?>)'>
-                                                                    <i class="mdi mdi-pencil me-1"></i>Edit
-                                                                </a>
-                                                                <a href="edit_project.php?delete_project=<?php echo htmlspecialchars($project['id']); ?>" 
-                                                                   class="dropdown-item text-danger" 
-                                                                   onclick="return confirm('Are you sure you want to delete this project?')">
-                                                                    <i class="mdi mdi-delete me-1"></i>Delete
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <p class="text-muted mb-3 project-description-truncate"><?php echo nl2br(htmlspecialchars($project['description'])); ?></p>
-                                                    
-                                                    <div class="project-meta">
-                                                        <?php if(!empty($project['client_name'])): ?>
-                                                            <div class="mb-1">
-                                                                <i class="mdi mdi-domain"></i>
-                                                                <strong>Client:</strong> <?php echo htmlspecialchars($project['client_name']); ?>
-                                                            </div>
-                                                        <?php endif; ?>
+                                    <div class="tab-content">
+                                        <!-- Projects Tab -->
+                                        <div class="tab-pane <?php echo ($active_tab == 'projects') ? 'show active' : ''; ?>" id="projects-tab">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-12">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h4 class="page-title">Projects</h4>
+                                                        <button class="btn btn-primary" onclick="openAddProjectModal()">
+                                                            <i class="mdi mdi-plus-circle me-1"></i> Add Project
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <div class="col-12">
-                                        <div class="card">
-                                            <div class="card-body text-center py-5">
-                                                <i class="mdi mdi-briefcase h1 text-muted"></i>
-                                                <h4 class="mt-3">No Projects Yet</h4>
-                                                <p class="text-muted">Click the "Add Project" button to create your first project.</p>
+
+                                            <div class="row" id="projects-container">
+                                                <?php if(mysqli_num_rows($projects_result) > 0): ?>
+                                                    <?php mysqli_data_seek($projects_result, 0); while($project = mysqli_fetch_assoc($projects_result)): ?>
+                                                        <div class="col-lg-4 project-item">
+                                                            <div class="card project-card">
+                                                                <?php if(!empty($project['thumbnail'])): ?>
+                                                                    <img src="<?php echo htmlspecialchars($project['thumbnail']); ?>" class="project-thumbnail" alt="<?php echo htmlspecialchars($project['title']); ?>">
+                                                                <?php else: ?>
+                                                                    <div class="project-no-thumbnail">
+                                                                        <i class="mdi mdi-briefcase-outline"></i>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                                <div class="card-body text-dark">
+                                                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                                                        <h5 class="mt-0 mb-1"><?php echo htmlspecialchars($project['title']); ?></h5>
+                                                                        <div class="dropdown">
+                                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                <i class="mdi mdi-dots-vertical"></i>
+                                                                            </a>
+                                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                                <a href="javascript:void(0);" class="dropdown-item" onclick='editProject(<?php echo htmlspecialchars(json_encode($project), ENT_QUOTES, "UTF-8"); ?>)'>
+                                                                                    <i class="mdi mdi-pencil me-1"></i>Edit
+                                                                                </a>
+                                                                                <a href="edit_project.php?delete_project=<?php echo htmlspecialchars($project['id']); ?>" 
+                                                                                   class="dropdown-item text-danger" 
+                                                                                   onclick="return confirm('Are you sure you want to delete this project?')">
+                                                                                    <i class="mdi mdi-delete me-1"></i>Delete
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <p class="text-muted mb-3 project-description-truncate"><?php echo nl2br(htmlspecialchars($project['description'])); ?></p>
+                                                                    
+                                                                    <div class="project-meta">
+                                                                        <?php if(!empty($project['client_name'])): ?>
+                                                                            <div class="mb-1">
+                                                                                <i class="mdi mdi-domain"></i>
+                                                                                <strong>Client:</strong> <?php echo htmlspecialchars($project['client_name']); ?>
+                                                                            </div>
+                                                                        <?php endif; ?>
+                                                                        
+                                                                        <?php
+                                                                        $p_id = $project['id'];
+                                                                        $count_res = $con->query("SELECT COUNT(*) as total FROM project_deliverables WHERE project_id = $p_id");
+                                                                        $count_row = $count_res->fetch_assoc();
+                                                                        $total_del = $count_row['total'];
+                                                                        ?>
+                                                                        <div class="mb-1">
+                                                                            <i class="mdi mdi-attachment"></i>
+                                                                            <strong>Deliverables:</strong> <?php echo $total_del; ?>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endwhile; ?>
+                                                <?php else: ?>
+                                                    <div class="col-12">
+                                                        <div class="card">
+                                                            <div class="card-body text-center py-5">
+                                                                <i class="mdi mdi-briefcase h1 text-muted"></i>
+                                                                <h4 class="mt-3">No Projects Yet</h4>
+                                                                <p class="text-muted">Click the "Add Project" button to create your first project.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
 
+                                        <!-- Deliverable Types Tab -->
+                                        <div class="tab-pane <?php echo ($active_tab == 'types') ? 'show active' : ''; ?>" id="types-tab">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-12">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h4 class="page-title">Deliverable Types</h4>
+                                                        <button class="btn btn-primary" onclick="openAddTypeModal()">
+                                                            <i class="mdi mdi-plus-circle me-1"></i> Add Type
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <?php if(count($deliverable_types) > 0): ?>
+                                                    <?php foreach($deliverable_types as $type): ?>
+                                                        <div class="col-md-4 mb-3">
+                                                            <div class="card h-100 border">
+                                                                <div class="card-body">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <h5 class="mb-0 text-dark"><?php echo htmlspecialchars($type['name']); ?></h5>
+                                                                        <div class="dropdown">
+                                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                <i class="mdi mdi-dots-vertical"></i>
+                                                                            </a>
+                                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                                <a href="javascript:void(0);" class="dropdown-item" onclick='editType(<?php echo htmlspecialchars(json_encode($type), ENT_QUOTES, "UTF-8"); ?>)'>
+                                                                                    <i class="mdi mdi-pencil me-1"></i>Edit
+                                                                                </a>
+                                                                                <a href="edit_deliverable_type.php?delete_type=<?php echo $type['id']; ?>" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this type?')">
+                                                                                    <i class="mdi mdi-delete me-1"></i>Delete
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <div class="col-12 text-center py-5">
+                                                        <i class="mdi mdi-format-list-bulleted-type h1 text-muted"></i>
+                                                        <h4 class="mt-3">No Types Yet</h4>
+                                                        <p class="text-muted">Click the "Add Type" button to get started.</p>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end tab-content-->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -414,8 +581,42 @@ $projects_result = mysqli_query($con, $sql);
             document.getElementById('remove-thumbnail-btn').style.display = 'none';
             document.getElementById('project-submit-btn').name = 'add_project';
             document.getElementById('project-submit-btn').textContent = 'Add Project';
+            
+            // Reset deliverables
+            document.getElementById('deliverables-container').innerHTML = '';
+            document.getElementById('existing-deliverables-container').style.display = 'none';
+            document.getElementById('existing-deliverables-list').innerHTML = '';
+            document.getElementById('deleted-deliverables-input').value = '';
+            
             $('#project-modal').modal('show');
         }
+
+        function openAddTypeModal() {
+            document.getElementById('type-modal-title').textContent = 'Add Deliverable Type';
+            document.getElementById('type-form').reset();
+            document.getElementById('type-id').value = '';
+            document.getElementById('type-submit-btn').name = 'add_type';
+            document.getElementById('type-submit-btn').textContent = 'Add Type';
+            $('#type-modal').modal('show');
+        }
+
+        function editType(type) {
+            document.getElementById('type-modal-title').textContent = 'Edit Deliverable Type';
+            document.getElementById('type-id').value = type.id;
+            document.getElementById('type_name').value = type.name;
+            document.getElementById('type-submit-btn').name = 'update_type';
+            document.getElementById('type-submit-btn').textContent = 'Update Type';
+            $('#type-modal').modal('show');
+        }
+
+        // Maintain active tab in URL
+        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const tabId = $(e.target).attr('href').replace('#', '');
+            const newUrl = window.location.pathname + '?tab=' + (tabId === 'projects-tab' ? 'projects' : 'types');
+            window.history.pushState({path:newUrl}, '', newUrl);
+        });
+
+        let deletedDeliverables = [];
 
         function editProject(project) {
             document.getElementById('project-modal-title').textContent = 'Edit Project';
@@ -436,7 +637,106 @@ $projects_result = mysqli_query($con, $sql);
             
             document.getElementById('project-submit-btn').name = 'update_project';
             document.getElementById('project-submit-btn').textContent = 'Update Project';
+
+            // Reset and Load Deliverables
+            document.getElementById('deliverables-container').innerHTML = '';
+            document.getElementById('deleted-deliverables-input').value = '';
+            deletedDeliverables = [];
+            
+            fetch(`api/get_projects.php`)
+                .then(response => response.json())
+                .then(res => {
+                    const currentProject = res.data.find(p => p.id == project.id);
+                    if (currentProject && currentProject.deliverables && currentProject.deliverables.length > 0) {
+                        displayExistingDeliverables(currentProject.deliverables);
+                    } else {
+                        document.getElementById('existing-deliverables-container').style.display = 'none';
+                    }
+                });
+
             $('#project-modal').modal('show');
+        }
+
+        function displayExistingDeliverables(deliverables) {
+            const container = document.getElementById('existing-deliverables-list');
+            const parent = document.getElementById('existing-deliverables-container');
+            container.innerHTML = '';
+            parent.style.display = 'block';
+
+            deliverables.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'existing-deliverable';
+                div.innerHTML = `
+                    <div class="existing-deliverable-info">
+                        <strong>${d.title || 'Untitled'}</strong> 
+                        <span class="badge bg-secondary deliverable-badge">${d.type_name}</span>
+                        <span class="badge bg-info deliverable-badge">${d.media_type}</span>
+                        <br>
+                        <small class="text-muted">${d.file_path.split('/').pop()}</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="markForDeletion(${d.id}, this)">
+                        <i class="mdi mdi-delete"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function markForDeletion(id, btn) {
+            if (confirm('Are you sure you want to delete this deliverable?')) {
+                deletedDeliverables.push(id);
+                document.getElementById('deleted-deliverables-input').value = deletedDeliverables.join(',');
+                btn.closest('.existing-deliverable').style.opacity = '0.5';
+                btn.closest('.existing-deliverable').style.pointerEvents = 'none';
+                btn.innerHTML = 'Removed';
+                btn.className = 'btn btn-sm btn-secondary';
+            }
+        }
+
+        const deliverableTypes = <?php echo json_encode($deliverable_types); ?>;
+        let deliverableIndex = 0;
+
+        function addDeliverableRow() {
+            const container = document.getElementById('deliverables-container');
+            const div = document.createElement('div');
+            div.className = 'deliverable-row';
+            
+            let typesOptions = '';
+            deliverableTypes.forEach(type => {
+                typesOptions += `<option value="${type.id}">${type.name}</option>`;
+            });
+
+            div.innerHTML = `
+                <span class="remove-deliverable" onclick="this.parentElement.remove()">
+                    <i class="mdi mdi-close-circle"></i>
+                </span>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <label class="form-label small">Deliverable Title</label>
+                        <input type="text" name="deliverable_titles[]" class="form-control form-control-sm" placeholder="Title (e.g. Logo Design)">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small">Media Type</label>
+                        <select name="deliverable_media_types[]" class="form-select form-select-sm">
+                            <option value="Image">Image</option>
+                            <option value="Video">Video</option>
+                            <option value="Audio">Audio</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label small">Category (Type)</label>
+                        <select name="deliverable_types[]" class="form-select form-select-sm">
+                            ${typesOptions}
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small">File</label>
+                        <input type="file" name="deliverable_files[]" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            deliverableIndex++;
         }
     </script>
 

@@ -46,6 +46,36 @@ if(isset($_POST['add_project'])){
         header("Location: projects.php?status=err&tab=projects");
         exit();
     } else {
+        $project_id = $con->insert_id;
+        
+        // Handle deliverables
+        if (isset($_POST['deliverable_titles']) && is_array($_POST['deliverable_titles'])) {
+            $deliverable_titles = $_POST['deliverable_titles'];
+            $deliverable_types = $_POST['deliverable_types'];
+            $deliverable_media_types = $_POST['deliverable_media_types'];
+            
+            $deliverables_dir = "uploads/projects/deliverables/";
+            if (!file_exists($deliverables_dir)) {
+                mkdir($deliverables_dir, 0777, true);
+            }
+            
+            foreach ($deliverable_titles as $index => $title_raw) {
+                if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
+                    $title = mysqli_real_escape_string($con, $title_raw);
+                    $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
+                    $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
+                    
+                    $file_name = time() . '_' . $index . '_' . basename($_FILES["deliverable_files"]["name"][$index]);
+                    $target_file = $deliverables_dir . $file_name;
+                    
+                    if (move_uploaded_file($_FILES["deliverable_files"]["tmp_name"][$index], $target_file)) {
+                        $con->query("INSERT INTO project_deliverables (project_id, type_id, media_type, title, file_path) 
+                                   VALUES ('$project_id', '$type_id', '$media_type', '$title', '$target_file')");
+                    }
+                }
+            }
+        }
+        
         header("Location: projects.php?status=succ&tab=projects");
         exit();
     }
@@ -108,6 +138,50 @@ if(isset($_POST['update_project'])){
         header("Location: projects.php?status=err&tab=projects");
         exit();
     } else {
+        // Handle new deliverables
+        if (isset($_POST['deliverable_titles']) && is_array($_POST['deliverable_titles'])) {
+            $deliverable_titles = $_POST['deliverable_titles'];
+            $deliverable_types = $_POST['deliverable_types'];
+            $deliverable_media_types = $_POST['deliverable_media_types'];
+            
+            $deliverables_dir = "uploads/projects/deliverables/";
+            if (!file_exists($deliverables_dir)) {
+                mkdir($deliverables_dir, 0777, true);
+            }
+            
+            foreach ($deliverable_titles as $index => $title_raw) {
+                if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
+                    $title = mysqli_real_escape_string($con, $title_raw);
+                    $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
+                    $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
+                    
+                    $file_name = time() . '_' . $index . '_' . basename($_FILES["deliverable_files"]["name"][$index]);
+                    $target_file = $deliverables_dir . $file_name;
+                    
+                    if (move_uploaded_file($_FILES["deliverable_files"]["tmp_name"][$index], $target_file)) {
+                        $con->query("INSERT INTO project_deliverables (project_id, type_id, media_type, title, file_path) 
+                                   VALUES ('$id', '$type_id', '$media_type', '$title', '$target_file')");
+                    }
+                }
+            }
+        }
+
+        // Handle deleted deliverables
+        if (isset($_POST['deleted_deliverables']) && !empty($_POST['deleted_deliverables'])) {
+            $deleted_ids = explode(',', $_POST['deleted_deliverables']);
+            foreach ($deleted_ids as $del_id) {
+                $del_id = (int)$del_id;
+                // Get file path to delete
+                $res = $con->query("SELECT file_path FROM project_deliverables WHERE id = $del_id AND project_id = $id");
+                if ($res && $row = $res->fetch_assoc()) {
+                    if (file_exists($row['file_path'])) {
+                        unlink($row['file_path']);
+                    }
+                    $con->query("DELETE FROM project_deliverables WHERE id = $del_id");
+                }
+            }
+        }
+        
         header("Location: projects.php?status=succ&tab=projects");
         exit();
     }
@@ -122,12 +196,19 @@ if (isset($_GET['delete_project'])) {
         exit();
     }
 
-    // Get thumbnail path before deleting
+    // Get thumbnail and deliverable files before deleting
     $res = $con->query("SELECT thumbnail FROM projects WHERE id = $id");
     if ($res && $row = $res->fetch_assoc()) {
         $thumbnail = $row['thumbnail'];
         if (!empty($thumbnail) && file_exists($thumbnail)) {
             unlink($thumbnail);
+        }
+    }
+
+    $res = $con->query("SELECT file_path FROM project_deliverables WHERE project_id = $id");
+    while ($res && $row = $res->fetch_assoc()) {
+        if (!empty($row['file_path']) && file_exists($row['file_path'])) {
+            unlink($row['file_path']);
         }
     }
 
