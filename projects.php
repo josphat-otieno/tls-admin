@@ -6,11 +6,9 @@ if (!isset($_SESSION['email'])) {
     header("Location:login.php");
 }
 $user = $_SESSION['name'];
- 
 
 // Get active tab
 $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'projects';
-
 // Get status message
 $status = '';
 $error_msg = '';
@@ -22,7 +20,7 @@ if (!empty($_GET['status'])) {
         case 'err':
             $status = 'error';
             if (isset($_GET['msg'])) {
-                switch($_GET['msg']) {
+                switch ($_GET['msg']) {
                     case 'invalid_image':
                         $error_msg = 'Invalid image file! Please upload JPG, PNG, GIF, or WEBP.';
                         break;
@@ -79,16 +77,19 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             border-radius: 8px;
             overflow: hidden;
         }
+
         .project-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
+
         .project-thumbnail {
             width: 100%;
             height: 200px;
             object-fit: cover;
             border-bottom: 1px solid #dee2e6;
         }
+
         .project-no-thumbnail {
             width: 100%;
             height: 200px;
@@ -99,16 +100,20 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             color: #adb5bd;
             border-bottom: 1px solid #dee2e6;
         }
+
         .project-no-thumbnail i {
             font-size: 48px;
         }
+
         .project-meta {
             font-size: 13px;
             color: #6c757d;
         }
+
         .project-meta i {
             margin-right: 5px;
         }
+
         .project-description-truncate {
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -118,6 +123,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             line-height: 1.5;
             min-height: 4.5em;
         }
+
         .image-upload-area {
             border: 2px dashed #cbd5e0;
             border-radius: 8px;
@@ -127,25 +133,30 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .image-upload-area:hover {
             border-color: #E62B1E;
             background: #f0f1ff;
         }
+
         .image-preview {
             max-width: 200px;
             max-height: 200px;
             margin: 10px auto;
             display: none;
         }
+
         .image-preview img {
             max-width: 100%;
             max-height: 200px;
             border-radius: 8px;
         }
+
         .remove-image-btn {
             display: none;
             margin-top: 10px;
         }
+
         /* Deliverables Styles */
         .deliverable-row {
             padding: 15px;
@@ -155,6 +166,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             border: 1px solid #e9ecef;
             position: relative;
         }
+
         .remove-deliverable {
             position: absolute;
             top: 10px;
@@ -163,6 +175,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             cursor: pointer;
             font-size: 18px;
         }
+
         .existing-deliverable {
             display: flex;
             align-items: center;
@@ -172,9 +185,11 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             border-radius: 6px;
             margin-bottom: 10px;
         }
+
         .existing-deliverable-info {
             flex-grow: 1;
         }
+
         .deliverable-badge {
             font-size: 11px;
             padding: 2px 6px;
@@ -187,7 +202,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
 <body class="loading" data-layout-color="light" data-layout-mode="default" data-layout-size="fluid"
     data-topbar-color="light" data-leftbar-position="fixed" data-leftbar-color="light" data-leftbar-size='default'
     data-sidebar-user='true'>
-    
+
     <!-- Success Alert Modal -->
     <div id="success-alert-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-sm">
@@ -232,7 +247,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                     <form id="project-form" action="edit_project.php" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="id" id="project-id">
                         <input type="hidden" name="old_thumbnail" id="old-thumbnail">
-                        
+
                         <div class="mb-3">
                             <label for="title" class="form-label">Project Title <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="title" name="title" required placeholder="Enter project title">
@@ -303,7 +318,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                 <div class="modal-body">
                     <form id="type-form" action="edit_deliverable_type.php" method="POST">
                         <input type="hidden" name="id" id="type-id">
-                        
+
                         <div class="mb-3">
                             <label for="type_name" class="form-label">Type Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="type_name" name="name" required placeholder="e.g., Image, Video, PDF">
@@ -338,9 +353,9 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             <div class="content">
                 <!-- Start Content-->
                 <div class="container-fluid">
-                    
+
                     <!-- start page title -->
-                    
+
                     <!-- end page title -->
 
                     <div class="row">
@@ -377,11 +392,12 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                                             </div>
 
                                             <div class="row" id="projects-container">
-                                                <?php if(mysqli_num_rows($projects_result) > 0): ?>
-                                                    <?php mysqli_data_seek($projects_result, 0); while($project = mysqli_fetch_assoc($projects_result)): ?>
+                                                <?php if (mysqli_num_rows($projects_result) > 0): ?>
+                                                    <?php mysqli_data_seek($projects_result, 0);
+                                                    while ($project = mysqli_fetch_assoc($projects_result)): ?>
                                                         <div class="col-lg-4 project-item">
                                                             <div class="card project-card">
-                                                                <?php if(!empty($project['thumbnail'])): ?>
+                                                                <?php if (!empty($project['thumbnail'])): ?>
                                                                     <img src="<?php echo htmlspecialchars($project['thumbnail']); ?>" class="project-thumbnail" alt="<?php echo htmlspecialchars($project['title']); ?>">
                                                                 <?php else: ?>
                                                                     <div class="project-no-thumbnail">
@@ -399,25 +415,25 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                                                                                 <a href="javascript:void(0);" class="dropdown-item" onclick='editProject(<?php echo htmlspecialchars(json_encode($project), ENT_QUOTES, "UTF-8"); ?>)'>
                                                                                     <i class="mdi mdi-pencil me-1"></i>Edit
                                                                                 </a>
-                                                                                <a href="edit_project.php?delete_project=<?php echo htmlspecialchars($project['id']); ?>" 
-                                                                                   class="dropdown-item text-danger" 
-                                                                                   onclick="return confirm('Are you sure you want to delete this project?')">
+                                                                                <a href="edit_project.php?delete_project=<?php echo htmlspecialchars($project['id']); ?>"
+                                                                                    class="dropdown-item text-danger"
+                                                                                    onclick="return confirm('Are you sure you want to delete this project?')">
                                                                                     <i class="mdi mdi-delete me-1"></i>Delete
                                                                                 </a>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    
+
                                                                     <p class="text-muted mb-3 project-description-truncate"><?php echo nl2br(htmlspecialchars($project['description'])); ?></p>
-                                                                    
+
                                                                     <div class="project-meta">
-                                                                        <?php if(!empty($project['client_name'])): ?>
+                                                                        <?php if (!empty($project['client_name'])): ?>
                                                                             <div class="mb-1">
                                                                                 <i class="mdi mdi-domain"></i>
                                                                                 <strong>Client:</strong> <?php echo htmlspecialchars($project['client_name']); ?>
                                                                             </div>
                                                                         <?php endif; ?>
-                                                                        
+
                                                                         <?php
                                                                         $p_id = $project['id'];
                                                                         $count_res = $con->query("SELECT COUNT(*) as total FROM project_deliverables WHERE project_id = $p_id");
@@ -461,8 +477,8 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                                             </div>
 
                                             <div class="row">
-                                                <?php if(count($deliverable_types) > 0): ?>
-                                                    <?php foreach($deliverable_types as $type): ?>
+                                                <?php if (count($deliverable_types) > 0): ?>
+                                                    <?php foreach ($deliverable_types as $type): ?>
                                                         <div class="col-md-4 mb-3">
                                                             <div class="card h-100 border">
                                                                 <div class="card-body">
@@ -524,7 +540,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
 
     <!-- App js -->
     <script src="assets/js/app.min.js"></script>
-    
+
     <!-- Select2 JS for searchable dropdowns -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -581,13 +597,13 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             document.getElementById('remove-thumbnail-btn').style.display = 'none';
             document.getElementById('project-submit-btn').name = 'add_project';
             document.getElementById('project-submit-btn').textContent = 'Add Project';
-            
+
             // Reset deliverables
             document.getElementById('deliverables-container').innerHTML = '';
             document.getElementById('existing-deliverables-container').style.display = 'none';
             document.getElementById('existing-deliverables-list').innerHTML = '';
             document.getElementById('deleted-deliverables-input').value = '';
-            
+
             $('#project-modal').modal('show');
         }
 
@@ -610,10 +626,12 @@ while ($type = mysqli_fetch_assoc($types_result)) {
         }
 
         // Maintain active tab in URL
-        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
             const tabId = $(e.target).attr('href').replace('#', '');
             const newUrl = window.location.pathname + '?tab=' + (tabId === 'projects-tab' ? 'projects' : 'types');
-            window.history.pushState({path:newUrl}, '', newUrl);
+            window.history.pushState({
+                path: newUrl
+            }, '', newUrl);
         });
 
         let deletedDeliverables = [];
@@ -625,7 +643,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             document.getElementById('description').value = project.description || '';
             document.getElementById('client_name').value = project.client_name || '';
             document.getElementById('old-thumbnail').value = project.thumbnail || '';
-            
+
             if (project.thumbnail) {
                 thumbnailPreviewImage.src = project.thumbnail;
                 thumbnailPreview.style.display = 'block';
@@ -634,7 +652,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                 thumbnailPreview.style.display = 'none';
                 removeThumbnailBtn.style.display = 'none';
             }
-            
+
             document.getElementById('project-submit-btn').name = 'update_project';
             document.getElementById('project-submit-btn').textContent = 'Update Project';
 
@@ -642,7 +660,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             document.getElementById('deliverables-container').innerHTML = '';
             document.getElementById('deleted-deliverables-input').value = '';
             deletedDeliverables = [];
-            
+
             fetch(`api/get_projects.php`)
                 .then(response => response.json())
                 .then(res => {
@@ -700,7 +718,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             const container = document.getElementById('deliverables-container');
             const div = document.createElement('div');
             div.className = 'deliverable-row';
-            
+
             let typesOptions = '';
             deliverableTypes.forEach(type => {
                 typesOptions += `<option value="${type.id}">${type.name}</option>`;
