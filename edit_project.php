@@ -9,6 +9,7 @@ if(isset($_POST['add_project'])){
     $title = mysqli_real_escape_string($con, $_POST['title']);
     $description = mysqli_real_escape_string($con, $_POST['description']);
     $client_name = mysqli_real_escape_string($con, $_POST['client_name']);
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
     $thumbnail_path = "";
     if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == 0) {
@@ -36,8 +37,8 @@ if(isset($_POST['add_project'])){
         }
     }
     
-    $sql = "INSERT INTO projects (title, description, client_name, thumbnail) 
-            VALUES ('$title', '$description', '$client_name', '$thumbnail_path')";
+    $sql = "INSERT INTO projects (title, description, client_name, thumbnail, is_featured) 
+            VALUES ('$title', '$description', '$client_name', '$thumbnail_path', '$is_featured')";
     
     $add_project = $con->query($sql);
     
@@ -87,6 +88,7 @@ if(isset($_POST['update_project'])){
     $title = mysqli_real_escape_string($con, $_POST['title']);
     $description = mysqli_real_escape_string($con, $_POST['description']);
     $client_name = mysqli_real_escape_string($con, $_POST['client_name']);
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     $old_thumbnail = $_POST['old_thumbnail'];
     
     $thumbnail_path = $old_thumbnail;
@@ -128,7 +130,8 @@ if(isset($_POST['update_project'])){
             title = '$title',
             description = '$description',
             client_name = '$client_name',
-            thumbnail = '$thumbnail_path'
+            thumbnail = '$thumbnail_path',
+            is_featured = '$is_featured'
             WHERE id = '$id'";
     
     $update = $con->query($sql);

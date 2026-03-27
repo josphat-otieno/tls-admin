@@ -263,6 +263,11 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                             <input type="text" class="form-control" id="client_name" name="client_name" placeholder="Enter client name">
                         </div>
 
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_featured" name="is_featured" value="1">
+                            <label class="form-check-label" for="is_featured">Feature this project</label>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Project Image / Thumbnail <small class="text-muted">(Optional)</small></label>
                             <div class="image-upload-area" id="thumbnail-upload-area">
@@ -406,7 +411,12 @@ while ($type = mysqli_fetch_assoc($types_result)) {
                                                                 <?php endif; ?>
                                                                 <div class="card-body text-dark">
                                                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                        <h5 class="mt-0 mb-1"><?php echo htmlspecialchars($project['title']); ?></h5>
+                                                                        <h5 class="mt-0 mb-1">
+                                                                            <?php echo htmlspecialchars($project['title']); ?>
+                                                                            <?php if (isset($project['is_featured']) && $project['is_featured'] == 1): ?>
+                                                                                <span class="badge bg-warning text-dark ms-1"><i class="mdi mdi-star"></i> Featured</span>
+                                                                            <?php endif; ?>
+                                                                        </h5>
                                                                         <div class="dropdown">
                                                                             <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                                                                 <i class="mdi mdi-dots-vertical"></i>
@@ -592,6 +602,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             document.getElementById('project-modal-title').textContent = 'Add Project';
             document.getElementById('project-form').reset();
             document.getElementById('project-id').value = '';
+            document.getElementById('is_featured').checked = false;
             document.getElementById('old-thumbnail').value = '';
             document.getElementById('thumbnail-preview').style.display = 'none';
             document.getElementById('remove-thumbnail-btn').style.display = 'none';
@@ -642,6 +653,7 @@ while ($type = mysqli_fetch_assoc($types_result)) {
             document.getElementById('title').value = project.title;
             document.getElementById('description').value = project.description || '';
             document.getElementById('client_name').value = project.client_name || '';
+            document.getElementById('is_featured').checked = project.is_featured == 1;
             document.getElementById('old-thumbnail').value = project.thumbnail || '';
 
             if (project.thumbnail) {
