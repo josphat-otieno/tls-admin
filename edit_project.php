@@ -61,11 +61,17 @@ if(isset($_POST['add_project'])){
             }
             
             foreach ($deliverable_titles as $index => $title_raw) {
-                if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
-                    $title = mysqli_real_escape_string($con, $title_raw);
-                    $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
-                    $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
-                    
+                $title = mysqli_real_escape_string($con, $title_raw);
+                $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
+                $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
+                
+                $is_youtube = ($media_type == 'Video' && !empty($_POST['deliverable_youtube_urls'][$index]));
+                
+                if ($is_youtube) {
+                    $youtube_url = mysqli_real_escape_string($con, $_POST['deliverable_youtube_urls'][$index]);
+                    $con->query("INSERT INTO project_deliverables (project_id, type_id, media_type, title, file_path) 
+                               VALUES ('$project_id', '$type_id', '$media_type', '$title', '$youtube_url')");
+                } else if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
                     $file_name = time() . '_' . $index . '_' . basename($_FILES["deliverable_files"]["name"][$index]);
                     $target_file = $deliverables_dir . $file_name;
                     
@@ -153,11 +159,17 @@ if(isset($_POST['update_project'])){
             }
             
             foreach ($deliverable_titles as $index => $title_raw) {
-                if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
-                    $title = mysqli_real_escape_string($con, $title_raw);
-                    $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
-                    $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
-                    
+                $title = mysqli_real_escape_string($con, $title_raw);
+                $type_id = mysqli_real_escape_string($con, $deliverable_types[$index]);
+                $media_type = mysqli_real_escape_string($con, $deliverable_media_types[$index]);
+                
+                $is_youtube = ($media_type == 'Video' && !empty($_POST['deliverable_youtube_urls'][$index]));
+                
+                if ($is_youtube) {
+                    $youtube_url = mysqli_real_escape_string($con, $_POST['deliverable_youtube_urls'][$index]);
+                    $con->query("INSERT INTO project_deliverables (project_id, type_id, media_type, title, file_path) 
+                               VALUES ('$id', '$type_id', '$media_type', '$title', '$youtube_url')");
+                } else if (isset($_FILES['deliverable_files']['name'][$index]) && $_FILES['deliverable_files']['error'][$index] == 0) {
                     $file_name = time() . '_' . $index . '_' . basename($_FILES["deliverable_files"]["name"][$index]);
                     $target_file = $deliverables_dir . $file_name;
                     
